@@ -12,7 +12,7 @@ mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
 // );
 
 // async function deleteData() {
-//   console.log("😢😢 Goodbye Data...");
+//   console.log(" Goodbye Data...");
 //   await Patient.remove();
 //   console.log(
 //     "Data Deleted. To load sample data, run\n\n\t npm run sample\n\n"
