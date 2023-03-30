@@ -156,7 +156,6 @@ exports.isValidToken = async (req, res, next) => {
       });
     else {
       req.admin = admin;
-      // console.log(req.admin);
       next();
     }
   } catch (err) {
