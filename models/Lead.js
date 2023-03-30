@@ -1,4 +1,7 @@
+// Import the mongoose library
 const mongoose = require("mongoose");
+
+// Set the default Promise implementation to the global Promise object
 mongoose.Promise = global.Promise;
 
 const leadSchema = new mongoose.Schema({
