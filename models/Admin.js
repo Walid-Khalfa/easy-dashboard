@@ -1,6 +1,10 @@
+// Import the mongoose library
 const mongoose = require("mongoose");
+// Create an instance of the mongoose.Schema class
 const Schema = mongoose.Schema;
+// Set the default Promise implementation to the global Promise object
 mongoose.Promise = global.Promise;
+// Import the bcryptjs library for password hashing
 const bcrypt = require("bcryptjs");
 
 const adminSchema = new Schema({
