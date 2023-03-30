@@ -16,7 +16,7 @@ async function loadData() {
     process.exit();
   } catch (e) {
     console.log(
-      "\n🚫 Error →! The Error info is below but if you are importing sample data make sure to drop the existing database first with.\n"
+      "\n Error →! The Error info is below but if you are importing sample data make sure to drop the existing database first with.\n"
     );
     console.log(e);
     process.exit();
