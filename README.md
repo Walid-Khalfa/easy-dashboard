@@ -1,11 +1,9 @@
-# Starter Antd Admin (Crud & auth) Mern App (Express.js / React / Redux / MongoDB)
+# Easy dashboard Mern App (Express.js / React / Redux / MongoDB)
 
-```
-Don't forget please to ⭐ this repo if you like this Starter Antd Admin!
-```
+``````
 
 
-![starter-antd-admin-crud-auth-mern-crud-auth](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/opp4yj177dizyaosah0o.png)
+![Easy-Dashboard](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/opp4yj177dizyaosah0o.png)
 
 
 ## CRM Starter Mern Antd Admin App 
