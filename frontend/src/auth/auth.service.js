@@ -1,3 +1,4 @@
+// Import API base URL and access token name from serverApiConfig
 import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
 
 import axios from "axios";
