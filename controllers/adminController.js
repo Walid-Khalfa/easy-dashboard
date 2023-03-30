@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Admin = mongoose.model("Admin");
 
-/**
+/*
  *  Get all documents of a Model
  *  @param {Object} req.params
  *  @returns {Object} Results with pagination
