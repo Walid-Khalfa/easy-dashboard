@@ -1,3 +1,4 @@
+// Import the CracoLessPlugin and CracoAlias plugins
 const CracoLessPlugin = require("craco-less");
 const CracoAlias = require("craco-alias");
 
