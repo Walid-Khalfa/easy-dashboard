@@ -11,7 +11,6 @@ const {
 
 const { loginDemo } = require("../controllers/authControllerDemo");
 
-// use {login } from authController , uncomment line below
 
 // router.route("/login").post(catchErrors(login));
 
