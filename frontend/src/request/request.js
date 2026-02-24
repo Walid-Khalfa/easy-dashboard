@@ -87,7 +87,7 @@ const request = {
     };
     try {
       let query = "";
-      if (option !== {}) {
+      if (Object.keys(option).length > 0) {
         let fields = option.fields ? "fields=" + option.fields : "";
         let question = option.question ? "&q=" + option.question : "";
         query = `?${fields}${question}`;
@@ -110,7 +110,7 @@ const request = {
     console.log(tokenCookies.get());
     try {
       let query = "";
-      if (option !== {}) {
+      if (Object.keys(option).length > 0) {
         let page = option.page ? "page=" + option.page : "";
         let items = option.items ? "&items=" + option.items : "";
         query = `?${page}${items}`;
