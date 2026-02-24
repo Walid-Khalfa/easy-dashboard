@@ -7,7 +7,14 @@ export function setCookie(cookieName, cookieValue) {
 export function getCookie(cookieName) {
 // Retrieve the cookie value from localStorage
 const result = window.localStorage.getItem(cookieName);
-  return JSON.parse(result);
+  if (result === null) {
+    return null;
+  }
+  try {
+    return JSON.parse(result);
+  } catch {
+    return result;
+  }
 }
 // Function for deleting a cookie using localStorage
 export function deleteCookie(cookieName) {

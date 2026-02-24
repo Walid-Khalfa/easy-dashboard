@@ -1,25 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import { Form, Input, Button, Checkbox, Layout, Row, Col, Divider } from "antd";
+import { Form, Input, Button, Checkbox, Layout, Row, Col, Divider, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import { login } from "@/redux/auth/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { auth } from "@/redux/auth/actions";
 import { selectAuth } from "@/redux/auth/selectors";
+import { useNavigate } from "react-router-dom";
 const { Content, Footer } = Layout;
 
 const LoginPage = () => {
-  // const [error, setError] = useState();
-
-  // const { setAdminData } = useContext(AdminContext);
-  // const history = useHistory();
-  const { loading: isLoading } = useSelector(selectAuth);
-  // function handleChange(e) {
-  //   const { name, value } = e.target;
-  //   setInputs((inputs) => ({ ...inputs, [name]: value }));
-  // }
+  const navigate = useNavigate();
+  const { loading: isLoading, isAuthenticated, error } = useSelector(selectAuth);
   const dispatch = useDispatch();
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    // Show error message if there's an error
+    if (error) {
+      message.error(error.message || 'Login failed');
+    }
+  }, [error]);
+
   const onFinish = (values) => {
     dispatch(login(values));
   };
@@ -36,16 +45,11 @@ const LoginPage = () => {
               }}
             >
               <h1>Login</h1>
-              {/* {error && (
-                <ErrorNotice
-                  message={error}
-                  clearError={() => setError(undefined)}
-                />
-              )} */}
               <Divider />
               <div className="site-layout-content">
                 {" "}
                 <Form
+                  form={form}
                   name="normal_login"
                   className="login-form"
                   initialValues={{
@@ -59,6 +63,10 @@ const LoginPage = () => {
                       {
                         required: true,
                         message: "Please input your Email!",
+                      },
+                      {
+                        type: 'email',
+                        message: "Please input a valid email!",
                       },
                     ]}
                   >

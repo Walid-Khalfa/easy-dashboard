@@ -1,23 +1,81 @@
 import axios from "axios";
-import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
-import { token as tokenCookies } from "@/auth";
+import { API_BASE_URL, ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from "@/config/serverApiConfig";
+import { getCookie, setCookie, deleteCookie } from "@/auth/cookie";
 import errorHandler from "./errorHandler";
 import successHandler from "./successHandler";
 
-const headersInstance = { [ACCESS_TOKEN_NAME]: tokenCookies.get() };
+// Token helper functions
+const getToken = () => getCookie(ACCESS_TOKEN_NAME);
+const getRefreshToken = () => getCookie(REFRESH_TOKEN_NAME);
 
+const setToken = (token) => setCookie(ACCESS_TOKEN_NAME, token);
+const setRefreshToken = (token) => setCookie(REFRESH_TOKEN_NAME, token);
+const removeTokens = () => {
+  deleteCookie(ACCESS_TOKEN_NAME);
+  deleteCookie(REFRESH_TOKEN_NAME);
+};
+
+// Create axios instance with dynamic token handling
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
-    ...headersInstance,
+    common: {
+      [ACCESS_TOKEN_NAME]: getToken(),
+    },
   },
+});
+
+// Response interceptor for token refresh
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // If token expired and not already retrying
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const refreshToken = getRefreshToken();
+        
+        if (!refreshToken) {
+          removeTokens();
+          window.location.href = '/login';
+          return Promise.reject(error);
+        }
+        
+        const response = await axios.post(`${API_BASE_URL}refresh`, {
+          refreshToken,
+        });
+        
+        const { token, refreshToken: newRefreshToken } = response.data.result;
+        
+        setToken(token);
+        setRefreshToken(newRefreshToken);
+        
+        originalRequest.headers[ACCESS_TOKEN_NAME] = token;
+        
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        removeTokens();
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
+const getHeaders = () => ({
+  [ACCESS_TOKEN_NAME]: getToken(),
 });
 
 const request = {
   create: async (entity, jsonData) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     console.log("jsonData", jsonData);
     try {
@@ -29,7 +87,7 @@ const request = {
   },
   read: async (entity, id) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.get(entity + "/read/" + id);
@@ -40,7 +98,7 @@ const request = {
   },
   update: async (entity, id, jsonData) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.patch(
@@ -55,7 +113,7 @@ const request = {
 
   delete: async (entity, id, option = {}) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.delete(entity + "/delete/" + id);
@@ -67,7 +125,7 @@ const request = {
 
   filter: async (entity, option = {}) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       let filter = option.filter ? "filter=" + option.filter : "";
@@ -83,7 +141,7 @@ const request = {
 
   search: async (entity, source, option = {}) => {
     axiosInstance.defaults.headers = {
-      [ACCESS_TOKEN_NAME]: tokenCookies.get(),
+      [ACCESS_TOKEN_NAME]: getToken(),
     };
     try {
       let query = "";
@@ -105,9 +163,9 @@ const request = {
 
   list: async (entity, option = {}) => {
     axiosInstance.defaults.headers = {
-      [ACCESS_TOKEN_NAME]: tokenCookies.get(),
+      [ACCESS_TOKEN_NAME]: getToken(),
     };
-    console.log(tokenCookies.get());
+    console.log(getToken());
     try {
       let query = "";
       if (Object.keys(option).length > 0) {
@@ -125,7 +183,7 @@ const request = {
 
   post: async (entityUrl, jsonData, option = {}) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.post(entityUrl, jsonData);
@@ -136,7 +194,7 @@ const request = {
   },
   get: async (entityUrl) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.get(entityUrl);
@@ -147,7 +205,7 @@ const request = {
   },
   patch: async (entityUrl, jsonData) => {
     axiosInstance.defaults.headers = {
-      ...headersInstance,
+      ...getHeaders(),
     };
     try {
       const response = await axiosInstance.patch(entityUrl, jsonData);

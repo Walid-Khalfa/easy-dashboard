@@ -12,27 +12,30 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/redux/auth/selectors";
 
 export default function Router() {
-  const { isLoggedIn } = useSelector(selectAuth);
+  const { isAuthenticated, isLoggedIn } = useSelector(selectAuth);
 
   useEffect(() => {
-    console.log("isLoggedIn : ", isLoggedIn);
-  }, [isLoggedIn]);
+    console.log("isAuthenticated : ", isAuthenticated);
+  }, [isAuthenticated]);
 
-  if (isLoggedIn === false)
+  // Show loading or redirect based on auth state
+  // If not authenticated, show login (AuthRouter)
+  if (!isAuthenticated && !isLoggedIn)
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <AuthRouter />
       </Layout>
     );
-  else
-    return (
+  
+  // If authenticated, show main app with navigation
+  return (
+    <Layout style={{ minHeight: "100vh" }}>
+      <Navigation />
       <Layout style={{ minHeight: "100vh" }}>
-        <Navigation />
-        <Layout style={{ minHeight: "100vh" }}>
-          <AppRouter />
-        </Layout>
+        <AppRouter />
       </Layout>
-    );
+    </Layout>
+  );
 }
 
 // export default App;
