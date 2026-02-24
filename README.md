@@ -1,10 +1,37 @@
-# Easy-Dashboard : Starter Kit CRM avec MERN & Ant Design
+# Easy-Dashboard Pro : Professional Starter Kit CRM MERN
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Easy-Dashboard Screenshot](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/opp4yj177dizyaosah0o.png)
+**Easy-Dashboard Pro** est une version modernisée et sécurisée du Starter Kit CRM. Cette version a été refactorisée pour répondre aux standards de production de 2025/2026.
 
-**Easy-Dashboard** est un kit de démarrage complet pour construire des applications de type CRM ou panneau d'administration. Basé sur le stack **MERN** (MongoDB, Express.js, React, Node.js) et utilisant la bibliothèque de composants **Ant Design**, ce projet fournit une base solide avec les fonctionnalités essentielles déjà implémentées.
+### 🚀 Améliorations de la Version Pro (2.0)
+
+*   **🛠️ Full Stack TypeScript :** Migration complète vers TypeScript pour une meilleure maintenabilité et sécurité du code.
+*   **⚡ Modernisation Frontend :** Passage à **React 18** et **Vite** pour des performances optimales. Utilisation d'**Ant Design 5** avec CSS-in-JS.
+*   **🧠 State Management Moderne :** Migration vers **Redux Toolkit** pour une gestion d'état simplifiée.
+*   **🛡️ Sécurité Renforcée :**
+    *   Validation des données avec **Zod**.
+    *   Authentification JWT avec **Refresh Tokens**.
+    *   Protection contre les attaques communes avec **Helmet** et **Rate Limiting**.
+    *   Gestion des rôles (**RBAC**).
+*   **📦 Backend Robuste :** Migration vers **Mongoose 8**, support du **Soft Delete**, filtrage et tri avancés sur les routes CRUD génériques.
+*   **🧪 Tests Automatisés :** Infrastructure de tests mise en place avec **Jest**, **Supertest** et **Vitest**.
+
+### 🛠️ Architecture & RBAC
+
+Le système utilise désormais un contrôle d'accès basé sur les rôles (RBAC) :
+*   **ADMIN :** Accès total, peut créer/supprimer d'autres administrateurs, gérer les produits.
+*   **STAFF :** Peut lire et modifier les clients et leads, mais ne peut pas les supprimer.
+
+Les permissions sont définies dans `middleware/rbac.ts` et peuvent être étendues de manière granulaire.
+
+### 📦 CRUD Générique Standardisé
+
+Le contrôleur CRUD (`controllers/crudController/crudMethods.ts`) a été standardisé pour offrir :
+*   **Pagination :** Paramètres `page` et `items`.
+*   **Tri :** Paramètre `sort` (ex: `sort=name`).
+*   **Filtrage :** Tout paramètre de query non réservé est utilisé comme filtre.
+*   **Soft Delete :** Les entités supprimées sont marquées `removed: true` et filtrées par défaut.
 
 Ce kit est conçu pour accélérer votre développement en vous fournissant une authentification sécurisée, une gestion des utilisateurs et des opérations CRUD génériques prêtes à l'emploi.
 
@@ -49,7 +76,7 @@ Suivez ces étapes pour lancer le projet sur votre machine locale.
 
 #### **Prérequis**
 
-* [Node.js](https://nodejs.org/) (version 14.x ou supérieure)
+* [Node.js](https://nodejs.org/) (version 18.x ou supérieure)
 * `npm` ou `yarn`
 * Un compte [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) pour obtenir une URL de connexion à la base de données.
 
@@ -91,13 +118,17 @@ Vous devrez lancer le serveur backend et l'application React dans deux terminaux
 
 1.  **Lancer le serveur Backend** (depuis le dossier racine `easy-dashboard`):
     ```bash
-    npm start
+    npm run build # Compilation TypeScript
+    npm start     # Lancement du serveur (dist/server.js)
+    # OU en développement :
+    npm run dev
     ```
-    Le serveur sera accessible sur `http://localhost:8000` (ou le port défini).
+    Le serveur sera accessible sur `http://localhost:8000`.
 
 2.  **Lancer l'application React** (depuis le dossier `easy-dashboard/frontend`):
     ```bash
-    npm start
+    npm install
+    npm run dev
     ```
     L'application sera accessible sur `http://localhost:3000`.
 

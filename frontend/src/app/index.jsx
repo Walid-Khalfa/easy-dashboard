@@ -5,7 +5,7 @@ import Router from "@/router";
 import history from "@/utils/history";
 import store from "@/redux/store";
 
-import { Button, Result } from "antd";
+import { Button, Result, ConfigProvider } from "antd";
 
 import useNetwork from "@/hooks/useNetwork";
 
@@ -31,7 +31,15 @@ function App() {
     return (
       <RouterHistory history={history}>
         <Provider store={store}>
-          <Router />
+          <ConfigProvider
+            theme={{
+              token: {
+                colorPrimary: '#1DA57A',
+              },
+            }}
+          >
+            <Router />
+          </ConfigProvider>
         </Provider>
       </RouterHistory>
     );
