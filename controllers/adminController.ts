@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import Admin from '../models/Admin';
+import { escapeRegex } from '../utils/regexEscape';
+
+// Allowed search fields for Admin model (whitelist)
+const ALLOWED_ADMIN_SEARCH_FIELDS = ['name', 'surname', 'email', 'role'];
 
 export const list = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -175,16 +179,67 @@ export const deleteAdmin = async (req: Request, res: Response) => {
 export const search = async (req: Request, res: Response) => {
   try {
     const query = req.query.q as string;
-    if (!query) {
+    if (!query || query.trim() === "") {
       return res.status(202).json({ success: false, result: [] });
     }
 
-    const fieldsArray = (req.query.fields as string || "name,surname,email").split(",");
-    const fields = { $or: fieldsArray.map(field => ({ [field]: { $regex: new RegExp(query, "i") } })), removed: false };
+    // Escape special regex characters to prevent ReDoS attacks
+    const escapedQuery = escapeRegex(query.trim());
+    
+    // Limit query length for additional protection
+    if (escapedQuery.length > 100) {
+      return res.status(400).json({ 
+        success: false, 
+        result: [], 
+        message: "Search query too long" 
+      });
+    }
+
+    const requestedFields = (req.query.fields as string || "name,surname,email").split(",");
+    
+    // Validate field names against whitelist
+    const validFields = requestedFields
+      .map(f => f.trim())
+      .filter(f => ALLOWED_ADMIN_SEARCH_FIELDS.includes(f));
+    
+    if (validFields.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        result: [], 
+        message: "No valid search fields provided" 
+      });
+    }
+
+    const fields = { 
+      $or: validFields.map(field => ({ 
+        [field]: { $regex: new RegExp(escapedQuery, "i") } 
+      })), 
+      removed: false 
+    };
 
     const result = await Admin.find(fields).select('-password').limit(10);
     return res.status(200).json({ success: true, result });
   } catch {
     return res.status(500).json({ success: false, result: [] });
+  }
+};
+
+export const unlockAccount = async (req: Request, res: Response) => {
+  try {
+    const admin = await Admin.findById(req.params.id);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    admin.failedLoginAttempts = 0;
+    admin.lockedUntil = undefined;
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Account unlocked successfully",
+    });
+  } catch {
+    return res.status(500).json({ success: false, message: "Error unlocking account" });
   }
 };

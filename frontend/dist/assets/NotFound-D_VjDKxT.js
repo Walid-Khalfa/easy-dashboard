@@ -1,0 +1,1 @@
+import{r as e,ct as s,t,cu as r,B as o}from"./index-WOgDrsTr.js";const u=()=>(e.useEffect(()=>{s.replace("/notfound")},[]),t.jsx(t.Fragment,{children:t.jsx(r,{status:"404",title:"404",subTitle:"Sorry, the page you visited does not exist.",extra:t.jsx(o,{href:"/",type:"primary",children:"Back Home"})})}));export{u as default};

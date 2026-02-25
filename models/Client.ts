@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IClient extends Document {
+  removed: boolean;
   enabled: boolean;
   company: string;
   name: string;
@@ -22,6 +23,10 @@ export interface IClient extends Document {
 }
 
 const clientSchema = new Schema<IClient>({
+  removed: {
+    type: Boolean,
+    default: false,
+  },
   enabled: {
     type: Boolean,
     default: true,
@@ -97,6 +102,15 @@ const clientSchema = new Schema<IClient>({
   },
 });
 
-const Client: Model<IClient> = mongoose.models.Client || mongoose.model<IClient>("Client", clientSchema);
+clientSchema.index({ removed: 1, created: -1 });
+clientSchema.index({ enabled: 1, removed: 1 });
+clientSchema.index({ company: 1 });
+clientSchema.index({ name: 1, surname: 1 });
+clientSchema.index({ phone: 1 });
+// email index removed - not needed for non-unique email field
+clientSchema.index({ country: 1 });
+
+const Client: Model<IClient> =
+  mongoose.models.Client || mongoose.model<IClient>('Client', clientSchema);
 
 export default Client;

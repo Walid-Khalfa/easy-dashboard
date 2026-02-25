@@ -13,6 +13,8 @@ export interface IAdmin extends Document {
   isLoggedIn?: boolean;
   refreshToken?: string;
   role: 'admin' | 'staff';
+  failedLoginAttempts?: number;
+  lockedUntil?: Date;
   generateHash(password: string): string;
   validPassword(password: string): boolean;
 }
@@ -58,7 +60,21 @@ const adminSchema = new Schema<IAdmin>({
     enum: ['admin', 'staff'],
     default: 'staff',
   },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+  },
+  lockedUntil: {
+    type: Date,
+  },
 });
+
+// Indexes for query optimization
+adminSchema.index({ removed: 1, createdAt: -1 });
+// email index is automatically created by unique: true in schema
+adminSchema.index({ role: 1, removed: 1 });
+adminSchema.index({ isLoggedIn: 1 });
+adminSchema.index({ refreshToken: 1 });
 
 // generating a hash
 adminSchema.methods.generateHash = function (password: string) {
@@ -70,6 +86,6 @@ adminSchema.methods.validPassword = function (password: string) {
   return bcrypt.compareSync(password, this.password);
 };
 
-const Admin: Model<IAdmin> = mongoose.models.Admin || mongoose.model<IAdmin>("Admin", adminSchema);
+const Admin: Model<IAdmin> = mongoose.models.Admin || mongoose.model<IAdmin>('Admin', adminSchema);
 
 export default Admin;

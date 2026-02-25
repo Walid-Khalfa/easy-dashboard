@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -34,29 +34,77 @@ const NotFound = lazy(() =>
 
 export default function AppRouter() {
   const location = useLocation();
+  
   return (
     <Suspense fallback={<PageLoader />}>
-      <AnimatePresence exitBeforeEnter initial={false}>
-        <Switch location={location} key={location.pathname}>
-          <PrivateRoute path="/" component={Dashboard} exact />
-          <PrivateRoute component={Customer} path="/customer" exact />
-          <PrivateRoute
-            component={SelectCustomer}
-            path="/selectcustomer"
-            exact
+      <AnimatePresence mode="wait" initial={false}>
+        <Routes location={location} key={location.pathname}>
+          <Route 
+            path="/" 
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } 
           />
-          <PrivateRoute component={Lead} path="/lead" exact />
-          <PrivateRoute component={Product} path="/product" exact />
-          <PrivateRoute component={Admin} path="/admin" exact />
-
-          <PrivateRoute component={Logout} path="/logout" exact />
-          <PublicRoute path="/login" render={() => <Redirect to="/" />} />
+          <Route 
+            path="/customer" 
+            element={
+              <PrivateRoute>
+                <Customer />
+              </PrivateRoute>
+            } 
+          />
           <Route
-            path="*"
-            component={NotFound}
-            render={() => <Redirect to="/notfound" />}
+            path="/selectcustomer"
+            element={
+              <PrivateRoute>
+                <SelectCustomer />
+              </PrivateRoute>
+            }
           />
-        </Switch>
+          <Route 
+            path="/lead" 
+            element={
+              <PrivateRoute>
+                <Lead />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/product" 
+            element={
+              <PrivateRoute>
+                <Product />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/admin" 
+            element={
+              <PrivateRoute>
+                <Admin />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/logout" 
+            element={
+              <PrivateRoute>
+                <Logout />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/login" 
+            element={
+              <PublicRoute>
+                <Navigate to="/" replace />
+              </PublicRoute>
+            } 
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </AnimatePresence>
     </Suspense>
   );

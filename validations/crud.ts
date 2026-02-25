@@ -19,10 +19,14 @@ export const clientCreateSchema = z.object({
     companyRegNumber: z.string().optional(),
     companyTaxNumber: z.string().optional(),
     companyTaxID: z.string().optional(),
-    customField: z.array(z.object({
-      fieldName: z.string(),
-      fieldValue: z.string(),
-    })).optional(),
+    customField: z
+      .array(
+        z.object({
+          fieldName: z.string(),
+          fieldValue: z.string(),
+        })
+      )
+      .optional(),
     enabled: z.boolean().optional(),
   }),
 });
@@ -32,7 +36,11 @@ export const clientUpdateSchema = z.object({
     company: z.string().min(1, 'Company name is required').optional(),
     name: z.string().min(1, 'Name is required').optional(),
     surname: z.string().min(1, 'Surname is required').optional(),
-    phone: z.string().min(1, 'Phone is required').regex(phoneRegex, 'Invalid phone number format').optional(),
+    phone: z
+      .string()
+      .min(1, 'Phone is required')
+      .regex(phoneRegex, 'Invalid phone number format')
+      .optional(),
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
     website: z.string().url('Invalid URL').optional().or(z.literal('')),
     address: z.string().optional(),
@@ -41,10 +49,14 @@ export const clientUpdateSchema = z.object({
     companyRegNumber: z.string().optional(),
     companyTaxNumber: z.string().optional(),
     companyTaxID: z.string().optional(),
-    customField: z.array(z.object({
-      fieldName: z.string(),
-      fieldValue: z.string(),
-    })).optional(),
+    customField: z
+      .array(
+        z.object({
+          fieldName: z.string(),
+          fieldValue: z.string(),
+        })
+      )
+      .optional(),
     enabled: z.boolean().optional(),
   }),
   params: z.object({
@@ -75,7 +87,11 @@ export const leadUpdateSchema = z.object({
   body: z.object({
     date: z.string().min(1, 'Date is required').optional(),
     client: z.string().min(1, 'Client is required').optional(),
-    phone: z.string().min(1, 'Phone is required').regex(phoneRegex, 'Invalid phone number format').optional(),
+    phone: z
+      .string()
+      .min(1, 'Phone is required')
+      .regex(phoneRegex, 'Invalid phone number format')
+      .optional(),
     email: z.string().email('Invalid email address').optional(),
     budget: z.number().min(0, 'Budget must be a positive number').optional(),
     request: z.string().optional(),
@@ -128,6 +144,19 @@ export const paginationSchema = z.object({
     page: z.coerce.number().int().positive().optional(),
     items: z.coerce.number().int().positive().max(100).optional(),
     sort: z.string().optional(),
+  }),
+});
+
+export const listQuerySchema = z.object({
+  query: z.object({
+    page: z.coerce.number().int().positive().optional(),
+    items: z.coerce.number().int().positive().max(100).optional(),
+    sort: z
+      .string()
+      .refine(val => /^[a-zA-Z_]+:(1|-1)$/.test(val), {
+        message: "Sort must be in format 'field:1' or 'field:-1'",
+      })
+      .optional(),
   }),
 });
 

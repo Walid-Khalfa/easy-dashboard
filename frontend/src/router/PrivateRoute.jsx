@@ -1,37 +1,22 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Route, Redirect } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectAuth } from "@/redux/auth/selectors";
 
-import * as authService from "@/auth";
+/**
+ * PrivateRoute - Wrapper component for protected routes
+ * Redirects to login if user is not authenticated
+ */
+function PrivateRoute({ children }) {
+  const { isAuthenticated } = useSelector(selectAuth);
+  const location = useLocation();
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  const config = {
-    type: "spring",
-    damping: 20,
-    stiffness: 100,
-  };
-  return (
-    // Show the component only when the admin is logged in
-    // Otherwise, redirect the admin to /signin page
+  if (!isAuthenticated) {
+    // Redirect to login while saving the attempted location
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-    <Route
-      {...rest}
-      render={(props) =>
-        authService.token.get() ? (
-          <motion.div
-            transition={config}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-          >
-            <Component {...props} />
-          </motion.div>
-        ) : (
-          <Redirect to="/login" />
-        )
-      }
-    />
-  );
-};
+  return children;
+}
 
 export default PrivateRoute;

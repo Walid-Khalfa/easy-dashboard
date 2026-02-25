@@ -1,23 +1,20 @@
+export function setCookie(cookieName, cookieValue, days = 7) {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${cookieName}=${encodeURIComponent(cookieValue)};expires=${expires.toUTCString()};path=/;SameSite=Strict${window.location.protocol === 'https:' ? ';Secure' : ''}`;
+}
 
-// Function for setting a cookie using localStorage
-export function setCookie(cookieName, cookieValue) {
-  window.localStorage.setItem(cookieName, JSON.stringify(cookieValue));
-}
-// Function for getting a cookie value using localStorage
 export function getCookie(cookieName) {
-// Retrieve the cookie value from localStorage
-const result = window.localStorage.getItem(cookieName);
-  if (result === null) {
-    return null;
+  const nameEQ = cookieName + '=';
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
   }
-  try {
-    return JSON.parse(result);
-  } catch {
-    return result;
-  }
+  return null;
 }
-// Function for deleting a cookie using localStorage
+
 export function deleteCookie(cookieName) {
-  window.localStorage.removeItem(cookieName);
-  return true;
+  document.cookie = cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
 }

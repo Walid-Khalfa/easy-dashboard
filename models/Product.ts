@@ -28,7 +28,7 @@ const productSchema = new Schema<IProduct>({
   },
   status: {
     type: String,
-    default: "available",
+    default: 'available',
   },
   removed: {
     type: Boolean,
@@ -36,6 +36,12 @@ const productSchema = new Schema<IProduct>({
   },
 });
 
-const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);
+productSchema.index({ removed: 1, enabled: 1 });
+productSchema.index({ productName: 1 });
+productSchema.index({ status: 1, removed: 1 });
+productSchema.index({ price: 1 });
+
+const Product: Model<IProduct> =
+  mongoose.models.Product || mongoose.model<IProduct>('Product', productSchema);
 
 export default Product;

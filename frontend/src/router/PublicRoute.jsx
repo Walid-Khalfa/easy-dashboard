@@ -1,29 +1,23 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Route, Redirect } from "react-router-dom";
-import * as authService from "@/auth";
+import { Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectAuth } from "@/redux/auth/selectors";
 
-const PublicRoute = ({ component: Component, ...rest }) => {
-  return (
-    // Show the component only when the admin is logged in
-    // Otherwise, redirect the admin to /signin page
-    <Route
-      {...rest}
-      render={(props) =>
-        authService.token.get() ? (
-          <Redirect to="/" />
-        ) : (
-          <motion.div
-            initial={{ x: 200 }}
-            animate={{ x: 0 }}
-            exit={{ scale: 0 }}
-          >
-            <Component {...props} />
-          </motion.div>
-        )
-      }
-    />
-  );
-};
+/**
+ * PublicRoute - Wrapper component for public routes
+ * Redirects authenticated users away from login page
+ */
+function PublicRoute({ children }) {
+  const { isAuthenticated } = useSelector(selectAuth);
+  const location = useLocation();
+
+  // If user is authenticated, redirect to the page they came from or home
+  if (isAuthenticated) {
+    const from = location.state?.from?.pathname || "/";
+    return <Navigate to={from} replace />;
+  }
+
+  return children;
+}
 
 export default PublicRoute;

@@ -39,7 +39,7 @@ const leadSchema = new Schema<ILead>({
   },
   status: {
     type: String,
-    default: "pending",
+    default: 'pending',
   },
   removed: {
     type: Boolean,
@@ -51,6 +51,13 @@ const leadSchema = new Schema<ILead>({
   },
 });
 
-const Lead: Model<ILead> = mongoose.models.Lead || mongoose.model<ILead>("Lead", leadSchema);
+leadSchema.index({ removed: 1, created: -1 });
+leadSchema.index({ status: 1, removed: 1 });
+leadSchema.index({ client: 1 });
+// email index removed - not needed for non-unique email field
+leadSchema.index({ phone: 1 });
+leadSchema.index({ status: 1, created: -1 });
+
+const Lead: Model<ILead> = mongoose.models.Lead || mongoose.model<ILead>('Lead', leadSchema);
 
 export default Lead;
